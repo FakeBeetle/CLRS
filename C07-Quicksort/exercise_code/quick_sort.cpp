@@ -25,14 +25,11 @@ void quick_sort(T A[], int start, int end) {// n = end - start + 1
 	if (start >= end)
 		return;
 	int partition_point = partition(A, start, end);//cn
-	// £\ = (partition_point - start)/n
-	quick_sort(A, start, partition_point - 1);//£\n
-	quick_sort(A, partition_point + 1, end);//(1-£\)n
-	for (int i = 0; i != 7; i++)
-		std::cout << A[i]<<" ";
-	std::cout << "\n";
+	// Â£\ = (partition_point - start)/n
+	quick_sort(A, start, partition_point - 1);//Â£\n
+	quick_sort(A, partition_point + 1, end);//(1-Â£\)n
 }
-
+//test example
 int main() {
 	int A[7] = { 2, 5, 9, 3, 7, 0, -1 };
 	quick_sort(A, 0, 6);
