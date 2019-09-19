@@ -1,5 +1,5 @@
 #include <iostream>
-class ListNode{
+class ListNode {
 public:
 	ListNode() {
 		data = 0;
@@ -8,7 +8,7 @@ public:
 	ListNode(int data, ListNode* next) {
 		this->data = data;
 		this->next = next;
-	
+
 	};
 	ListNode* getNext() {
 		return this->next;
@@ -27,36 +27,37 @@ private:
 	int data;
 	ListNode* next;
 };
-class ListNode_doubly:public ListNode {
+
+class ListNode_doubly :public ListNode {
 public:
 	ListNode_doubly(ListNode* m) {
 		this->setData(m->getData());
 		this->setNext(m->getNext());
 		this->previous = NULL;
 	};
+
+	ListNode_doubly* getNext() {
+		return this->next;
+	}
+	void setNext_doubly(ListNode_doubly* p) {
+		this->next = p;
+	}
 	ListNode_doubly* getPrevious() {
 		return this->previous;
 	}
 	void setPrevious(ListNode_doubly* p) {
 		this->previous = p;
 	}
-	ListNode_doubly* getNext() {
-		return this->next;
-	}
-	void setNext(ListNode_doubly* p) {
-		this->next = p;
-	}
-	
-
 private:
 	ListNode_doubly* previous;
 	ListNode_doubly* next;
 };
 
-class Linked_list {
+class Linked_list_singly {
 public:
-	Linked_list();
-	Linked_list(ListNode* head) {
+	friend class Linked_list_doubly;
+	Linked_list_singly();
+	Linked_list_singly(ListNode* head) {
 		this->head = head;
 	}
 	ListNode* getHead() {
@@ -65,22 +66,27 @@ public:
 	void setHead(ListNode* new_head) {
 		this->head = new_head;
 	}
-	void insert_as_head(ListNode* a) {
-		a->setNext(this->head);
-		this->setHead(a);
-	}
-	void insert(ListNode* a,int before_which_data) {
-		ListNode* current = getHead();
-		if (current == NULL)
-			return;
-		while (current->getNext() != NULL&& current->getNext()->getData() != before_which_data) {
-			current = current->getNext();
+	void insert_by_order(ListNode* newnode) {//按顺序插入
+		if (this->head == NULL)
+			this->head = newnode;
+		else if (newnode->getData() < head->getData()) {
+			newnode->setNext(head->getNext());
+			this->head = newnode;
 		}
-		if (current->getNext()) {
-			a->setNext(current->getNext());
-			current->setNext(a);
+		else {
+			ListNode* p = head;
+			while (p->getNext()!=NULL&&p->getNext()->getData() < newnode->getData()) {
+				p = p->getNext();
+			}
+			newnode->setNext(p->getNext());
+			p->setNext(newnode);
 		}
 	}
+	void insert(ListNode* after_which, ListNode* newnode) {
+		newnode->setNext(after_which->getNext());
+		after_which->setNext(newnode);
+	}
+
 	ListNode* search(int data) {
 		ListNode* current = getHead();
 		if (current == NULL)
@@ -90,59 +96,62 @@ public:
 		}
 		return  current->getNext();
 	}
-	void remove(ListNode*  deleted_node) {
+
+	ListNode* remove(ListNode*  deleted_node) {
 		ListNode* current = getHead();
 		if (current) {
-			while (current->getNext() != NULL && current->getNext()!= deleted_node) {
+			while (current->getNext() != NULL && current->getNext() != deleted_node) {
 				current = current->getNext();
 			}
 			if (current->getNext()) {
 				current->setNext(deleted_node->getNext());
+				return deleted_node;
 			}
 		}
+		return NULL;
 	}
 private:
 	ListNode* head;
 
 };
-class Doubly_linked_list :public Linked_list {
+
+class Linked_list_doubly :public Linked_list_singly {
 public:
-	void setHead(ListNode_doubly* new_head) {
-		this->head = new_head;
-	}
-	ListNode_doubly* getHead() {
-		return this->head;
-	}
+	Linked_list_doubly(Linked_list_singly* source_list) {
+		ListNode* p = source_list->getHead();
+	};
 	void remove(ListNode_doubly*  deleted_node) {
 		deleted_node->getPrevious()->setNext(deleted_node->getNext());
 		deleted_node->getNext()->setPrevious(deleted_node->getPrevious());
 	}
-	void insert(ListNode_doubly* a, int before_which_data) {
-		ListNode_doubly* current = getHead();
-		if (current == NULL)
-			return;
-		while (current->getNext() != NULL && current->getNext()->getData() != before_which_data) {
-			current = current->getNext();
+	void insert_by_order(ListNode_doubly* newnode) {//按顺序插入
+		if (this->head == NULL)
+			this->head = newnode;
+		else if (newnode->getData() < head->getData()) {
+			newnode->setNext(head->getNext());
+			this->head = newnode;
 		}
-		if (current->getNext()) {
-			a->setNext(current->getNext());
-			a -> setPrevious(current->getPrevious());
-			a->getPrevious()->setNext(a);
-			a->getNext()->setPrevious(a);
+		else {
+			ListNode_doubly* p = head;
+			while (p->getNext() != NULL && p->getNext()->getData() < newnode->getData()) {
+				p = p->getNext();
+			}
+			newnode->setNext(p->getNext());
+			newnode->setPrevious(p);
+			p->setNext(newnode);
+			if (newnode->getNext() != NULL)
+				newnode->getNext()->setPrevious(newnode);
 		}
+	}
+	void insert(ListNode_doubly* after_which, ListNode_doubly* newnode) {
+	  //if (after_which){
+		newnode->setPrevious(after_which);
+		newnode->setNext(after_which->getNext());
+		after_which->setNext(newnode);
+		if (newnode->getNext() != NULL)
+			newnode->getNext()->setPrevious(newnode);
+	  //}
 	}
 private:
 	ListNode_doubly* head;
 };
-
-
-
-
-int main() {
-	ListNode n0;
-	ListNode n1;
-	n0.setNext(&n1);
-	ListNode_doubly n2(&n0);
-	std::cout<<n2.getNext();
-	return 0;
-}
