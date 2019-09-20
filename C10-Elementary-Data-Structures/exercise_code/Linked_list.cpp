@@ -75,7 +75,7 @@ public:
 		}
 		else {
 			ListNode* p = head;
-			while (p->getNext()!=NULL&&p->getNext()->getData() < newnode->getData()) {
+			while (p->getNext() != NULL && p->getNext()->getData() < newnode->getData()) {
 				p = p->getNext();
 			}
 			newnode->setNext(p->getNext());
@@ -144,14 +144,76 @@ public:
 		}
 	}
 	void insert(ListNode_doubly* after_which, ListNode_doubly* newnode) {
-	  //if (after_which){
+		//if (after_which){
 		newnode->setPrevious(after_which);
 		newnode->setNext(after_which->getNext());
 		after_which->setNext(newnode);
 		if (newnode->getNext() != NULL)
 			newnode->getNext()->setPrevious(newnode);
-	  //}
+		//}
 	}
 private:
 	ListNode_doubly* head;
+};
+
+class Stack_on_linked_list {
+public:
+	Stack_on_linked_list();
+	void push(ListNode* newnode) {
+		if (this->actual_storage.getHead() != NULL) {
+			newnode->setNext(this->actual_storage.getHead());
+		}
+		this->actual_storage.setHead(newnode);
+	}
+	ListNode* pop() {
+		ListNode* deleted_node = this->actual_storage.getHead();
+		this->actual_storage.setHead(deleted_node->getNext());
+		return deleted_node;
+	}
+private:
+	Linked_list_singly actual_storage;
+};
+
+class Binary_Treenode {
+public:
+	int data;
+	Binary_Treenode* left;
+	Binary_Treenode* right;
+	Binary_Treenode* parent;
+};
+class Treenode {
+private:
+	int data;
+	int branches;
+	Treenode* children[1000];
+};
+class TreeNode {
+private:
+	int data;
+	TreeNode* parent;
+	TreeNode* leftmost_child;
+	TreeNode* right_sibling;
+};
+class Tree{
+public:
+	Tree();
+	Tree(Binary_Treenode* root) {
+		this->root = root;
+	}
+	void show_recursive() {
+		if(this->root!=NULL) {
+			Tree(this->root->left).show_recursive();
+			std::cout << this->root->data << "\n";
+			Tree(this->root->right).show_recursive();
+		}
+	};
+	void show() {
+		Binary_Treenode* p = root;
+		while (p != NULL) {
+			std::cout << p->data;
+			 
+		}
+	}
+private:
+	Binary_Treenode* root;
 };
